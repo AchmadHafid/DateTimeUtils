@@ -1,0 +1,49 @@
+buildscript {
+    apply from: 'versions.gradle'
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath plugin.agp
+        classpath plugin.kotlin
+    }
+}
+
+plugins {
+    id "com.github.dcendents.android-maven" version "2.1"
+    id "com.github.ben-manes.versions" version "0.36.0"
+    id "io.gitlab.arturbosch.detekt" version "1.14.2"
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+subprojects {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = '1.8'
+            allWarningsAsErrors = true
+        }
+    }
+}
+
+detekt {
+    failFast = false
+    input  = files("$projectDir")
+    config = files("$projectDir/detekt.yml")
+    reports {
+        xml.enabled = true
+        txt.enabled = true
+    }
+}
+
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt) {
+    jvmTarget = "1.8"
+}

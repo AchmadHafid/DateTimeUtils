@@ -1,0 +1,41 @@
+android {
+    compileSdkVersion versions.compileSdkVersion
+    defaultConfig {
+        minSdkVersion versions.minSdkVersion
+        targetSdkVersion versions.targetSdkVersion
+        versionCode versions.code
+        versionName versions.name
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+    lintOptions {
+        warningsAsErrors true
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring deps.jdk_lib
+    implementation deps.stdlib
+
+    testImplementation deps.test_core
+    testImplementation deps.test_runner
+    testImplementation deps.test_rules
+    testImplementation deps.test_junit_ktx
+    testImplementation deps.robolectric
+
+    androidTestImplementation deps.test_core
+    androidTestImplementation deps.test_runner
+    androidTestImplementation deps.test_rules
+    androidTestImplementation deps.test_junit_ktx
+}
