@@ -5,7 +5,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 apply from: '../shared_build.gradle'
 
-group = 'co.id.bithealth.datetimeutils'
+group = 'com.github.Bithealth-id'
 
 android {
     defaultConfig {
