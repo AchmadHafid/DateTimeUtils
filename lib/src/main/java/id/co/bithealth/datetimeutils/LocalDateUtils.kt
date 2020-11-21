@@ -1,16 +1,70 @@
 @file:Suppress("TooManyFunctions")
+
 package id.co.bithealth.datetimeutils
 
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-//region Date Formatting
+//region Parsing
+
+fun String.toLocalDate(): LocalDate =
+    LocalDate.parse(this)
+
+fun String.toLocalDateOrToday(): LocalDate =
+    toLocalDateOrDefault(TODAY)
+
+infix fun String.toLocalDateOrDefault(localDate: LocalDate): LocalDate =
+    runCatching { LocalDate.parse(this) }.getOrDefault(localDate)
+
+infix fun String.toLocalDate(pattern: String): LocalDate =
+    LocalDate.parse(this, pattern.asFormatter)
+
+infix fun String.toLocalDateOrToday(pattern: String): LocalDate =
+    toLocalDateOrDefault(pattern, TODAY)
+
+fun String.toLocalDateOrDefault(pattern: String, localDate: LocalDate): LocalDate =
+    runCatching { LocalDate.parse(this, pattern.asFormatter) }.getOrDefault(localDate)
+
+fun String.toLocalDate(pattern: String, locale: Locale): LocalDate =
+    LocalDate.parse(this, pattern.asFormatter.withLocale(locale))
+
+fun String.toLocalDateOrToday(pattern: String, locale: Locale): LocalDate =
+    toLocalDateOrDefault(pattern, locale, TODAY)
+
+fun String.toLocalDateOrDefault(pattern: String, locale: Locale, localDate: LocalDate): LocalDate =
+    runCatching { LocalDate.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(localDate)
+
+infix fun String.toLocalDate(style: FormatStyle): LocalDate =
+    LocalDate.parse(this, style.asFormatter)
+
+infix fun String.toLocalDateOrToday(style: FormatStyle): LocalDate =
+    toLocalDateOrDefault(style, TODAY)
+
+fun String.toLocalDateOrDefault(style: FormatStyle, localDate: LocalDate): LocalDate =
+    runCatching { LocalDate.parse(this, style.asFormatter) }.getOrDefault(localDate)
+
+fun String.toLocalDate(style: FormatStyle, locale: Locale): LocalDate =
+    LocalDate.parse(this, style.asFormatter.withLocale(locale))
+
+fun String.toLocalDateOrToday(style: FormatStyle, locale: Locale): LocalDate =
+    toLocalDateOrDefault(style, locale, TODAY)
+
+fun String.toLocalDateOrDefault(style: FormatStyle, locale: Locale, localDate: LocalDate): LocalDate =
+    runCatching { LocalDate.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(localDate)
+
+//endregion
+//region Formatting
 
 infix fun LocalDate.withIndFormat(pattern: String): String =
     withFormat(pattern, LOCALE_IND)
+
+infix fun LocalDate.withIndFormat(style: FormatStyle): String =
+    withFormat(style, LOCALE_IND)
 
 infix fun LocalDate.withFormat(pattern: String): String =
     withFormat(pattern, Locale.getDefault())
@@ -18,86 +72,77 @@ infix fun LocalDate.withFormat(pattern: String): String =
 fun LocalDate.withFormat(pattern: String, locale: Locale = Locale.getDefault()): String =
     format(DateTimeFormatter.ofPattern(pattern, locale))
 
-infix fun LocalDate.withIndFormat(style: FormatStyle): String =
-    withFormat(style, LOCALE_IND)
-
 infix fun LocalDate.withFormat(style: FormatStyle): String =
     withFormat(style, Locale.getDefault())
 
 fun LocalDate.withFormat(style: FormatStyle, locale: Locale = Locale.getDefault()): String =
     format(DateTimeFormatter.ofLocalizedDate(style).withLocale(locale))
 
+
 //endregion
-//region Date Checking
+//region Manipulation
 
-inline val TODAY: LocalDate
-    get() = LocalDate.now()
+inline val LocalDate.toStartOfTheMonth: LocalDate
+    get() = withDayOfMonth(1)
+inline val LocalDate.toEndOfTheMonth: LocalDate
+    get() = plusMonths(1).toStartOfTheMonth.minusDays(1)
+inline val LocalDate.toStartOfTheYear: LocalDate
+    get() = withDayOfYear(1)
+inline val LocalDate.toEndOfTheYear: LocalDate
+    get() = plusYears(1).toStartOfTheYear.minusDays(1)
 
-inline val LocalDate.isToday
-    get() = this == TODAY
+//endregion
+//region Conversion
 
-inline val LocalDate.isTomorrow
-    get() = minusDays(1) == TODAY
+infix fun LocalDate.withTime(localTime: LocalTime): LocalDateTime =
+    LocalDateTime.of(this, localTime)
 
-inline val LocalDate.isYesterday
-    get() = plusDays(1) == TODAY
+fun LocalDate.sinceYesterday(): LocalDateRange =
+    minusDays(1) to this
 
-inline val LocalDate.isPast
+fun LocalDate.sincePreviousWeek(): LocalDateRange =
+    this to minusDays(DAYS_OF_WEEK.toLong())
+
+fun LocalDate.sincePreviousMonth(): LocalDateRange =
+    this to minusMonths(1)
+
+fun LocalDate.sincePreviousYear(): LocalDateRange =
+    this to minusYears(1)
+
+fun LocalDate.untilTomorrow(): LocalDateRange =
+    this to plusDays(1)
+
+fun LocalDate.untilNextWeek(): LocalDateRange =
+    this to plusDays(DAYS_OF_WEEK.toLong())
+
+fun LocalDate.untilNextMonth(): LocalDateRange =
+    this to plusMonths(1)
+
+fun LocalDate.untilNextYear(): LocalDateRange =
+    this to plusYears(1)
+
+//endregion
+//region Checking
+
+inline val LocalDate.isToday: Boolean
+    get() = equals(TODAY)
+
+inline val LocalDate.isPast: Boolean
     get() = isBefore(TODAY)
 
-inline val LocalDate.isFuture
+inline val LocalDate.isFuture: Boolean
     get() = isAfter(TODAY)
 
-inline val LocalDate.isWeekend
+inline val LocalDate.isWeekend: Boolean
     get() = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY
 
-inline val LocalDate.isWeekDay
+inline val LocalDate.isWeekDay: Boolean
     get() = !isWeekend
 
-//endregion
-//region Date Range
-
-inline val Pair<LocalDate, LocalDate>.min: LocalDate
-    get() = if (first.isBefore(second)) first else second
-
-inline val Pair<LocalDate, LocalDate>.max: LocalDate
-    get() = if (first.isBefore(second)) second else first
-
-infix fun LocalDate.isWithin(dateRange: Pair<LocalDate, LocalDate>) =
+infix fun LocalDate.isWithin(dateRange: LocalDateRange): Boolean =
     this == dateRange.first || this == dateRange.second || isWithinExclusive(dateRange)
 
-infix fun LocalDate.isWithinExclusive(dateRange: Pair<LocalDate, LocalDate>) =
+infix fun LocalDate.isWithinExclusive(dateRange: LocalDateRange): Boolean =
     isBefore(dateRange.second) && isAfter(dateRange.first)
-
-infix fun Pair<LocalDate, LocalDate>.withIndFormat(pattern: String) =
-    withFormat(pattern, LOCALE_IND)
-
-infix fun Pair<LocalDate, LocalDate>.withFormat(pattern: String) =
-    withFormat(pattern, Locale.getDefault())
-
-fun Pair<LocalDate, LocalDate>.withFormat(pattern: String, locale: Locale = Locale.getDefault()) =
-    formatDateRange(first.withFormat(pattern, locale), second.withFormat(pattern, locale))
-
-infix fun Pair<LocalDate, LocalDate>.withIndFormat(style: FormatStyle) =
-    withFormat(style, LOCALE_IND)
-
-infix fun Pair<LocalDate, LocalDate>.withFormat(style: FormatStyle) =
-    withFormat(style, Locale.getDefault())
-
-fun Pair<LocalDate, LocalDate>.withFormat(style: FormatStyle, locale: Locale = Locale.getDefault()) =
-    formatDateRange(first.withFormat(style, locale), second.withFormat(style, locale))
-
-@Suppress("NestedBlockDepth")
-private fun formatDateRange(startDate: String, endDate: String): String =
-    startDate.split(" ").let { start ->
-        endDate.split(" ").let { end ->
-            start.filter {
-                !end.contains(it)
-            }.let {
-                if (it.isEmpty()) endDate
-                else "${it.joinToString(" ")} - $endDate"
-            }
-        }
-    }
 
 //endregion

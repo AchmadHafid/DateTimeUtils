@@ -1,15 +1,69 @@
 @file:Suppress("TooManyFunctions")
+
 package id.co.bithealth.datetimeutils
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-//region Time Formatting
+//region Parsing
+
+fun String.toLocalTime(): LocalTime =
+    LocalTime.parse(this)
+
+fun String.toLocalTimeOrThisTime(): LocalTime =
+    toLocalTimeOrDefault(THIS_TIME)
+
+infix fun String.toLocalTimeOrDefault(localTime: LocalTime): LocalTime =
+    runCatching { LocalTime.parse(this) }.getOrDefault(localTime)
+
+infix fun String.toLocalTime(pattern: String): LocalTime =
+    LocalTime.parse(this, pattern.asFormatter)
+
+infix fun String.toLocalTimeOrThisTime(pattern: String): LocalTime =
+    toLocalTimeOrDefault(pattern, THIS_TIME)
+
+fun String.toLocalTimeOrDefault(pattern: String, localTime: LocalTime): LocalTime =
+    runCatching { LocalTime.parse(this, pattern.asFormatter) }.getOrDefault(localTime)
+
+fun String.toLocalTime(pattern: String, locale: Locale): LocalTime =
+    LocalTime.parse(this, pattern.asFormatter.withLocale(locale))
+
+fun String.toLocalTimeOrThisTime(pattern: String, locale: Locale): LocalTime =
+    toLocalTimeOrDefault(pattern, locale, THIS_TIME)
+
+fun String.toLocalTimeOrDefault(pattern: String, locale: Locale, localTime: LocalTime): LocalTime =
+    runCatching { LocalTime.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(localTime)
+
+infix fun String.toLocalTime(style: FormatStyle): LocalTime =
+    LocalTime.parse(this, style.asFormatter)
+
+infix fun String.toLocalTimeOrThisTime(style: FormatStyle): LocalTime =
+    toLocalTimeOrDefault(style, THIS_TIME)
+
+fun String.toLocalTimeOrDefault(style: FormatStyle, localTime: LocalTime): LocalTime =
+    runCatching { LocalTime.parse(this, style.asFormatter) }.getOrDefault(localTime)
+
+fun String.toLocalTime(style: FormatStyle, locale: Locale): LocalTime =
+    LocalTime.parse(this, style.asFormatter.withLocale(locale))
+
+fun String.toLocalTimeOrThisTime(style: FormatStyle, locale: Locale): LocalTime =
+    toLocalTimeOrDefault(style, locale, THIS_TIME)
+
+fun String.toLocalTimeOrDefault(style: FormatStyle, locale: Locale, localTime: LocalTime): LocalTime =
+    runCatching { LocalTime.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(localTime)
+
+//endregion
+//region Formatting
 
 infix fun LocalTime.withIndFormat(pattern: String): String =
     withFormat(pattern, LOCALE_IND)
+
+infix fun LocalTime.withIndFormat(style: FormatStyle): String =
+    withFormat(style, LOCALE_IND)
 
 infix fun LocalTime.withFormat(pattern: String): String =
     withFormat(pattern, Locale.getDefault())
@@ -20,76 +74,49 @@ fun LocalTime.withFormat(pattern: String, locale: Locale = Locale.getDefault()):
 infix fun LocalTime.withFormat(style: FormatStyle): String =
     withFormat(style, Locale.getDefault())
 
-infix fun LocalTime.withIndFormat(style: FormatStyle): String =
-    withFormat(style, LOCALE_IND)
-
 fun LocalTime.withFormat(style: FormatStyle, locale: Locale = Locale.getDefault()): String =
     format(DateTimeFormatter.ofLocalizedTime(style).withLocale(locale))
 
 //endregion
-//region Time Manipulation
+//region Manipulation
 
-inline val LocalTime.removeSecondsAndNanos: LocalTime
-    get() = removeSeconds.removeNanos
+inline val LocalTime.resetSecondsAndNanos: LocalTime
+    get() = resetSeconds.resetNanos
 
-inline val LocalTime.removeSeconds: LocalTime
+inline val LocalTime.resetSeconds: LocalTime
     get() = withSecond(0)
 
-inline val LocalTime.removeNanos: LocalTime
+inline val LocalTime.resetNanos: LocalTime
     get() = withNano(0)
 
 //endregion
-//region Time Checking
+//region Conversion
 
-inline val THIS_TIME: LocalTime
-    get() = LocalTime.now()
+infix fun LocalTime.withDate(localDate: LocalDate): LocalDateTime =
+    LocalDateTime.of(localDate, this)
 
-fun LocalTime.isNow(ignoreSeconds: Boolean = true, ignoreMillis: Boolean = true) =
-    apply {
-        if (ignoreSeconds) removeSeconds
-        if (ignoreMillis) removeNanos
-    } == THIS_TIME.apply {
-        if (ignoreSeconds) removeSeconds
-        if (ignoreMillis) removeNanos
-    }
+fun LocalTime.sinceStartOfTheDay(): LocalTimeRange =
+    LocalTime.MIDNIGHT to this
 
-inline val LocalTime.isPast
-    get() = isBefore(THIS_TIME)
-
-inline val LocalTime.isFuture
-    get() = isAfter(THIS_TIME)
+fun LocalTime.untilEndOfTheDay(): LocalTimeRange =
+    this to END_OF_DAY
 
 //endregion
-//region Time Range
+//region Checking
 
-inline val Pair<LocalTime, LocalTime>.min: LocalTime
-    get() = if (first.isBefore(second)) first else second
+inline val LocalTime.isThisTime: Boolean
+    get() = equals(THIS_TIME)
 
-inline val Pair<LocalTime, LocalTime>.max: LocalTime
-    get() = if (first.isBefore(second)) second else first
+inline val LocalTime.isPast: Boolean
+    get() = isBefore(THIS_TIME)
 
-infix fun LocalTime.isWithin(timeRange: Pair<LocalTime, LocalTime>) =
+inline val LocalTime.isFuture: Boolean
+    get() = isAfter(THIS_TIME)
+
+infix fun LocalTime.isWithin(timeRange: LocalTimeRange): Boolean =
     this == timeRange.first || this == timeRange.second || isWithinExclusive(timeRange)
 
-infix fun LocalTime.isWithinExclusive(timeRange: Pair<LocalTime, LocalTime>) =
-    isBefore(timeRange.second) && isAfter(timeRange.first)
-
-infix fun Pair<LocalTime, LocalTime>.withIndFormat(pattern: String) =
-    withFormat(pattern, LOCALE_IND)
-
-infix fun Pair<LocalTime, LocalTime>.withFormat(pattern: String) =
-    withFormat(pattern, Locale.getDefault())
-
-fun Pair<LocalTime, LocalTime>.withFormat(pattern: String, locale: Locale = Locale.getDefault()) =
-    "${first.withFormat(pattern, locale)} - ${second.withFormat(pattern, locale)}"
-
-infix fun Pair<LocalTime, LocalTime>.withIndFormat(style: FormatStyle) =
-    withFormat(style, LOCALE_IND)
-
-infix fun Pair<LocalTime, LocalTime>.withFormat(style: FormatStyle) =
-    withFormat(style, Locale.getDefault())
-
-fun Pair<LocalTime, LocalTime>.withFormat(style: FormatStyle, locale: Locale = Locale.getDefault()) =
-    "${first.withFormat(style, locale)} - ${second.withFormat(style, locale)}"
+infix fun LocalTime.isWithinExclusive(timeRange: LocalTimeRange): Boolean =
+    isBefore(timeRange.sorted.second) && isAfter(timeRange.sorted.first)
 
 //endregion
