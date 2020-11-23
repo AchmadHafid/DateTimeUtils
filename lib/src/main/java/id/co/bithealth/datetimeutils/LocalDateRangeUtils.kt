@@ -114,10 +114,12 @@ infix fun LocalDateRange.isWithinExclusive(other: LocalDateRange): Boolean =
     first isWithinExclusive other && second isWithinExclusive other
 
 infix fun LocalDateRange.isOverlapWith(other: LocalDateRange): Boolean =
-    first isWithin other && second isWithin other
+    first isWithin other || second isWithin other
+            || other.first isWithin this || other.second isWithin this
 
 infix fun LocalDateRange.isOverlapExclusiveWith(other: LocalDateRange): Boolean =
-    first isWithinExclusive other && second isWithinExclusive other
+    first isWithinExclusive other || second isWithinExclusive other
+            || other.first isWithinExclusive this || other.second isWithinExclusive this
 
 infix fun LocalDateRange.equals(other: LocalDateRange): Boolean =
     first == other.first && second == other.second

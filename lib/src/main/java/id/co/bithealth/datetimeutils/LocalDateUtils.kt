@@ -133,6 +133,12 @@ inline val LocalDate.isPast: Boolean
 inline val LocalDate.isFuture: Boolean
     get() = isAfter(TODAY)
 
+inline val LocalDate.isTomorrow: Boolean
+    get() = minusDays(1) == TODAY
+
+inline val LocalDate.isYesterday: Boolean
+    get() = plusDays(1) == TODAY
+
 inline val LocalDate.isWeekend: Boolean
     get() = dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY
 
