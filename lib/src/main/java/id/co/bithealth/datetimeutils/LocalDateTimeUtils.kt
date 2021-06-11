@@ -3,13 +3,12 @@
 package id.co.bithealth.datetimeutils
 
 import java.time.Instant
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
+import java.util.*
 
 //region Parsing
 //region Timestamp
@@ -71,8 +70,14 @@ fun String.toLocalDateTime(pattern: String, locale: Locale): LocalDateTime =
 fun String.toLocalDateTimeOrNow(pattern: String, locale: Locale): LocalDateTime =
     toLocalDateTimeOrDefault(pattern, locale, NOW)
 
-fun String.toLocalDateTimeOrDefault(pattern: String, locale: Locale, dateTime: LocalDateTime): LocalDateTime =
-    runCatching { LocalDateTime.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(dateTime)
+fun String.toLocalDateTimeOrDefault(
+    pattern: String,
+    locale: Locale,
+    dateTime: LocalDateTime
+): LocalDateTime =
+    runCatching { LocalDateTime.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(
+        dateTime
+    )
 
 infix fun String.toLocalDateTime(style: FormatStyle): LocalDateTime =
     LocalDateTime.parse(this, style.asFormatter)
@@ -89,8 +94,14 @@ fun String.toLocalDateTime(style: FormatStyle, locale: Locale): LocalDateTime =
 fun String.toLocalDateTimeOrNow(style: FormatStyle, locale: Locale): LocalDateTime =
     toLocalDateTimeOrDefault(style, locale, NOW)
 
-fun String.toLocalDateTimeOrDefault(style: FormatStyle, locale: Locale, dateTime: LocalDateTime): LocalDateTime =
-    runCatching { LocalDateTime.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(dateTime)
+fun String.toLocalDateTimeOrDefault(
+    style: FormatStyle,
+    locale: Locale,
+    dateTime: LocalDateTime
+): LocalDateTime =
+    runCatching { LocalDateTime.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(
+        dateTime
+    )
 
 //endregion
 //endregion
@@ -125,6 +136,12 @@ inline val LocalDateTime.toEndOfTheDay: LocalDateTime
 
 //endregion
 //region Conversion
+
+fun Instant.toLocalDateTime(zoneId: ZoneId = ZoneId.systemDefault()): LocalDateTime =
+    LocalDateTime.ofInstant(this, zoneId)
+
+fun LocalDateTime.toInstant(zoneId: ZoneId = ZoneId.systemDefault()): Instant =
+    ZonedDateTime.of(this, zoneId).toInstant()
 
 fun LocalDateTime.sinceStartOfTheDay(): LocalDateTimeRange =
     toStartOfTheDay to this

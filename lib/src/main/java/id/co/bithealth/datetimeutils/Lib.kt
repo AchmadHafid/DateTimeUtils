@@ -5,7 +5,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
+import java.util.*
+import kotlin.math.absoluteValue
 
 typealias LocalTimeRange = Pair<LocalTime, LocalTime>
 typealias LocalDateRange = Pair<LocalDate, LocalDate>
@@ -24,6 +25,7 @@ inline val THIS_SECOND: Int
     get() = THIS_TIME.second
 inline val THIS_MILLI_SECOND: Int
     get() = THIS_TIME.nano
+
 @Suppress("MagicNumber")
 inline val END_OF_DAY: LocalTime
     get() = LocalTime.MIDNIGHT.minusNanos(1)
@@ -78,3 +80,37 @@ internal inline val String.asFormatter: DateTimeFormatter
 
 internal inline val FormatStyle.asFormatter: DateTimeFormatter
     get() = DateTimeFormatter.ofLocalizedDateTime(this)
+
+inline val Int.daysBack: List<LocalDate>
+    get() {
+        val dates = mutableListOf<LocalDate>()
+        repeat(this) {
+            dates.add(TODAY.minusDays(it.toLong()))
+        }
+        return dates
+    }
+
+inline val Int.daysForward: List<LocalDate>
+    get() {
+        val dates = mutableListOf<LocalDate>()
+        repeat(this) {
+            dates.add(TODAY.plusDays(it.toLong()))
+        }
+        return dates
+    }
+
+infix fun LocalDate.plusMinus(range: Int): List<LocalDate> {
+    val dates = mutableListOf<LocalDate>()
+
+    repeat(range.absoluteValue) {
+        dates.add(minusDays((it + 1).toLong()))
+    }
+
+    dates.add(this)
+
+    repeat(range.absoluteValue) {
+        dates.add(plusDays((it + 1).toLong()))
+    }
+
+    return dates
+}

@@ -2,13 +2,10 @@
 
 package id.co.bithealth.datetimeutils
 
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
+import java.util.*
 
 //region Parsing
 
@@ -37,7 +34,9 @@ fun String.toLocalDateOrToday(pattern: String, locale: Locale): LocalDate =
     toLocalDateOrDefault(pattern, locale, TODAY)
 
 fun String.toLocalDateOrDefault(pattern: String, locale: Locale, localDate: LocalDate): LocalDate =
-    runCatching { LocalDate.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(localDate)
+    runCatching { LocalDate.parse(this, pattern.asFormatter.withLocale(locale)) }.getOrDefault(
+        localDate
+    )
 
 infix fun String.toLocalDate(style: FormatStyle): LocalDate =
     LocalDate.parse(this, style.asFormatter)
@@ -54,8 +53,14 @@ fun String.toLocalDate(style: FormatStyle, locale: Locale): LocalDate =
 fun String.toLocalDateOrToday(style: FormatStyle, locale: Locale): LocalDate =
     toLocalDateOrDefault(style, locale, TODAY)
 
-fun String.toLocalDateOrDefault(style: FormatStyle, locale: Locale, localDate: LocalDate): LocalDate =
-    runCatching { LocalDate.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(localDate)
+fun String.toLocalDateOrDefault(
+    style: FormatStyle,
+    locale: Locale,
+    localDate: LocalDate
+): LocalDate =
+    runCatching { LocalDate.parse(this, style.asFormatter.withLocale(locale)) }.getOrDefault(
+        localDate
+    )
 
 //endregion
 //region Formatting
@@ -78,7 +83,6 @@ infix fun LocalDate.withFormat(style: FormatStyle): String =
 fun LocalDate.withFormat(style: FormatStyle, locale: Locale = Locale.getDefault()): String =
     format(DateTimeFormatter.ofLocalizedDate(style).withLocale(locale))
 
-
 //endregion
 //region Manipulation
 
@@ -93,6 +97,13 @@ inline val LocalDate.toEndOfTheYear: LocalDate
 
 //endregion
 //region Conversion
+
+fun Instant.toLocalDate(zoneId: ZoneId = ZoneId.systemDefault()): LocalDate =
+    toLocalDateTime(zoneId).toLocalDate()
+
+fun LocalDate.toInstantRange(zoneId: ZoneId = ZoneId.systemDefault()): Pair<Instant, Instant> =
+    ZonedDateTime.of(atStartOfDay(), zoneId).toInstant() to
+            ZonedDateTime.of(atStartOfDay().plusDays(1), zoneId).toInstant()
 
 infix fun LocalDate.withTime(localTime: LocalTime): LocalDateTime =
     LocalDateTime.of(this, localTime)
