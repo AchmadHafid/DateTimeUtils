@@ -1,11 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 
 apply from: '../shared_build.gradle'
 
-group = 'com.github.Bithealth-id'
+group = 'com.github.AchmadHafid'
 
 android {
     defaultConfig {

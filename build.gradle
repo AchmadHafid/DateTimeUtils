@@ -3,7 +3,6 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
     dependencies {
         classpath plugin.agp
@@ -13,15 +12,14 @@ buildscript {
 
 plugins {
     id "com.github.dcendents.android-maven" version "2.1"
-    id "com.github.ben-manes.versions" version "0.36.0"
-    id "io.gitlab.arturbosch.detekt" version "1.14.2"
+    id "com.github.ben-manes.versions" version "0.39.0"
+    id "io.gitlab.arturbosch.detekt" version "1.17.1"
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 }
 

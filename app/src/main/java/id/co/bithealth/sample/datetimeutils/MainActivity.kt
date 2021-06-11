@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onCreate(savedInstanceState)
         findViewById<TextView>(R.id.tv_now)?.text =
             "Current Date: ${TODAY withIndFormat "EEEE, dd MMMM yyyy"}\n" +
-                    "Current Time: ${THIS_TIME withIndFormat "hh:mm:ss"}"
+                    "Current Time: ${THIS_TIME withIndFormat "HH:mm:ss"}"
     }
 
 }
