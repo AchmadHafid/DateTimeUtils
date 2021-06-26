@@ -5,7 +5,7 @@ apply(from: "../shared_build.gradle")
 
 android {
     defaultConfig {
-        applicationId "id.co.bithealth.sample.datetimeutils"
+        applicationId "io.github.achmadhafid.sampleapp"
     }
     buildTypes {
         debug {

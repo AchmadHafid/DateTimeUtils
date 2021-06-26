@@ -20,7 +20,7 @@ ext.versions = [
         //endregion
         //region Core Dependencies
 
-        jdk_lib           : '1.0.9',
+        desugar_jdk_libs  : '1.1.5',
 
         //endregion
         //region Android
@@ -54,24 +54,24 @@ ext.plugin = [
 ext.deps = [
         //region Core
 
-        stdlib        : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin",
-        jdk_lib       : "com.android.tools:desugar_jdk_libs:$versions.jdk_lib",
+        stdlib          : "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin",
+        desugar_jdk_libs: "com.android.tools:desugar_jdk_libs:$versions.desugar_jdk_libs",
 
         //endregion
 
-        material      : "com.google.android.material:material:$versions.material",
-        appcompat     : "androidx.appcompat:appcompat:$versions.appcompat",
+        material        : "com.google.android.material:material:$versions.material",
+        appcompat       : "androidx.appcompat:appcompat:$versions.appcompat",
 
         //region Testing
 
-        junit         : "junit:junit:$versions.junit",
-        robolectric   : "org.robolectric:robolectric:$versions.robolectric",
-        truth         : "com.google.truth:truth:$versions.google_truth",
-        hamcrest      : "org.hamcrest:hamcrest:$versions.hamcrest",
-        test_core     : "androidx.test:core-ktx:$versions.test_core",
-        test_runner   : "androidx.test:runner:$versions.test_runner",
-        test_rules    : "androidx.test:rules:$versions.test_rules",
-        test_espresso : [
+        junit           : "junit:junit:$versions.junit",
+        robolectric     : "org.robolectric:robolectric:$versions.robolectric",
+        truth           : "com.google.truth:truth:$versions.google_truth",
+        hamcrest        : "org.hamcrest:hamcrest:$versions.hamcrest",
+        test_core       : "androidx.test:core-ktx:$versions.test_core",
+        test_runner     : "androidx.test:runner:$versions.test_runner",
+        test_rules      : "androidx.test:rules:$versions.test_rules",
+        test_espresso   : [
                 "androidx.test.espresso:espresso-contrib:$versions.test_espresso",
                 "androidx.test.espresso:espresso-intents:$versions.test_espresso",
                 "androidx.test.espresso:espresso-accessibility:$versions.test_espresso",
@@ -79,9 +79,9 @@ ext.deps = [
                 "androidx.test.espresso.idling:idling-concurrent:$versions.test_espresso",
                 "androidx.test.espresso.idling:idling-net:$versions.test_espresso"
         ],
-        test_junit_ktx: "androidx.test.ext:junit-ktx:$versions.test_ext_junit_ktx",
-        test_truth    : "androidx.test.ext:truth:$versions.test_ext_truth",
-        test_fragment : "androidx.fragment:fragment-testing:$versions.test_fragment",
+        test_junit_ktx  : "androidx.test.ext:junit-ktx:$versions.test_ext_junit_ktx",
+        test_truth      : "androidx.test.ext:truth:$versions.test_ext_truth",
+        test_fragment   : "androidx.fragment:fragment-testing:$versions.test_fragment",
 
         //endregion
 ]
