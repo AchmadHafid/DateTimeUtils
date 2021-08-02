@@ -114,3 +114,24 @@ infix fun LocalDate.plusMinus(range: Int): List<LocalDate> {
 
     return dates
 }
+
+fun ClosedRange<LocalDate>.toList(): List<LocalDate> {
+    if (start == endInclusive) return listOf(start)
+
+    val dates = mutableListOf<LocalDate>()
+    var date = start
+
+    if (start.isBefore(endInclusive)) {
+        while (date.isBefore(endInclusive.plusDays(1))) {
+            dates.add(date)
+            date = date.plusDays(1)
+        }
+    } else {
+        while (date.isAfter(endInclusive.minusDays(1))) {
+            dates.add(date)
+            date = date.minusDays(1)
+        }
+    }
+
+    return dates
+}

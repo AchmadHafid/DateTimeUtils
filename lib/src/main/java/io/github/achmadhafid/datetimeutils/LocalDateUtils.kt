@@ -138,6 +138,9 @@ fun LocalDate.untilNextYear(): LocalDateRange =
 inline val LocalDate.isToday: Boolean
     get() = equals(TODAY)
 
+inline val LocalDate.isTodayOrBefore
+    get() = isToday || isBefore(TODAY)
+
 inline val LocalDate.isPast: Boolean
     get() = isBefore(TODAY)
 
