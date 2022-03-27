@@ -7,15 +7,15 @@ ext.versions = [
         //endregion
         //region SDK
 
-        compileSdkVersion : 30,
+        compileSdkVersion : 31,
         minSdkVersion     : 21,
-        targetSdkVersion  : 30,
+        targetSdkVersion  : 31,
 
         //endregion
         //region Plugin
 
-        agp               : '7.0.0',
-        kotlin            : '1.5.21',
+        agp               : '7.1.2',
+        kotlin            : '1.6.10',
 
         //endregion
         //region Core Dependencies
@@ -25,8 +25,8 @@ ext.versions = [
         //endregion
         //region Android
 
-        material          : '1.5.0-alpha01',
-        appcompat         : '1.4.0-alpha03',
+        material          : '1.6.0-beta01',
+        appcompat         : '1.4.1',
 
         //endregion
         //region Testing Dependencies
